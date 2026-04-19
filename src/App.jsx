@@ -13,14 +13,15 @@ import {
   ShieldCheck,
   Zap,
   Layout,
-  ExternalLink
+  ExternalLink,
+  Smartphone,
+  MousePointer2,
+  Eye,
+  X
 } from 'lucide-react';
 
 /**
- * PERBAIKAN UTAMA: 
- * Komponen InputWrapper dipindahkan ke LUAR komponen App.
- * Jika ditaruh di dalam App, React akan membuat ulang komponen ini 
- * setiap kali state berubah (ketik huruf), yang menyebabkan input kehilangan fokus.
+ * Komponen InputWrapper di luar App untuk mencegah kehilangan fokus kursor
  */
 const InputWrapper = ({ label, children, hint, icon: Icon }) => (
   <div className="group space-y-2">
@@ -29,21 +30,105 @@ const InputWrapper = ({ label, children, hint, icon: Icon }) => (
       {label}
     </label>
     {children}
-    {hint && <p className="text-[11px] text-slate-400 italic">{hint}</p>}
+    {hint && <p className="text-[11px] text-slate-400 italic leading-tight">{hint}</p>}
   </div>
 );
 
+/**
+ * Komponen Preview Landing Page yang modern dan eye-catching
+ */
+const LandingPagePreview = ({ data, isModal = false }) => {
+  const services = data.layanan ? data.layanan.split(',').map(s => s.trim()) : ['Layanan Unggulan 1', 'Layanan Unggulan 2'];
+  const advantages = data.keunggulan ? data.keunggulan.split(',').map(s => s.trim()) : ['Kualitas Terjamin', 'Pelayanan 24/7'];
+
+  return (
+    <div className={`w-full bg-white shadow-2xl border border-slate-200 overflow-hidden text-left transition-all duration-500 flex flex-col ${isModal ? 'h-[80vh] rounded-t-3xl' : 'h-full max-h-[85vh] rounded-3xl'}`}>
+      {/* Browser Bar */}
+      <div className="bg-slate-50 px-4 py-3 border-b border-slate-200 flex items-center gap-2 sticky top-0 z-10">
+        <div className="flex gap-1.5">
+          <div className="w-3 h-3 rounded-full bg-rose-400" />
+          <div className="w-3 h-3 rounded-full bg-amber-400" />
+          <div className="w-3 h-3 rounded-full bg-emerald-400" />
+        </div>
+        <div className="bg-white px-4 py-1.5 rounded-full text-[11px] text-slate-400 flex-1 ml-3 border border-slate-200 truncate font-medium">
+          https://{data.domain || 'bisnis-anda.com'}
+        </div>
+      </div>
+
+      <div className="flex-1 overflow-y-auto scrollbar-hide">
+        {/* Hero Section */}
+        <header className="p-6 sm:p-8 text-center" style={{ backgroundColor: `${data.warna}08` }}>
+          <nav className="flex justify-between items-center mb-8">
+            <div className="font-black text-sm sm:text-base tracking-tighter" style={{ color: data.warna }}>
+              {data.namaBisnis || 'NAMA BISNIS'}
+            </div>
+            <div className="flex gap-3 text-[9px] font-bold text-slate-400 uppercase tracking-widest">
+              <span>Home</span>
+              <span>Layanan</span>
+            </div>
+          </nav>
+          
+          <div className="animate-fadeIn">
+            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 mb-4 leading-[1.1] tracking-tight">
+              {data.judulUtama || 'Solusi Digital Terbaik'}
+            </h1>
+            <p className="text-xs sm:text-sm text-slate-500 max-w-sm mx-auto mb-6 leading-relaxed">
+              {data.deskripsi || 'Jelaskan layanan Anda di sini.'}
+            </p>
+            <button 
+              className="px-6 py-2.5 rounded-xl text-[10px] font-black text-white shadow-xl transition-transform active:scale-95" 
+              style={{ backgroundColor: data.warna }}
+            >
+              Konsultasi
+            </button>
+          </div>
+        </header>
+
+        {/* Services */}
+        <section className="p-6 sm:p-8 bg-white">
+          <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-6 text-center">Layanan</h2>
+          <div className="grid grid-cols-1 gap-3">
+            {services.map((item, idx) => (
+              <div key={idx} className="p-4 rounded-xl border border-slate-100 bg-slate-50/50 flex items-center gap-3">
+                <Zap size={16} style={{ color: data.warna }} />
+                <p className="text-xs font-bold text-slate-700">{item}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Why Us */}
+        <section className="p-6 sm:p-8 bg-slate-900 text-white rounded-t-[2rem]">
+          <h2 className="text-sm font-bold mb-4 tracking-tight">Kenapa Kami?</h2>
+          <div className="grid grid-cols-1 gap-2">
+            {advantages.map((item, idx) => (
+              <div key={idx} className="flex items-center gap-2 bg-white/5 p-2.5 rounded-lg">
+                <CheckCircle size={12} className="text-green-400" />
+                <span className="text-[10px] font-medium text-slate-300">{item}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <footer className="p-6 bg-white text-center border-t border-slate-100">
+           <p className="text-base font-black text-slate-900">{data.kontakWA || 'WhatsApp'}</p>
+        </footer>
+      </div>
+    </div>
+  );
+};
+
 const App = () => {
-  // URL Web App dari Google Apps Script Anda
-  const GAS_URL = "https://script.google.com/macros/s/AKfycbwFII-6aSUGLUUXSyGEFUfdJn1id-RJyfMbV6iyhgMVtbviML0o-nHFxuGEaY6nxkoV/exec"; 
+  const GAS_URL = "https://script.google.com/macros/s/AKfycby_HQrDaZU1vmS9rdu1kqNNTno5ndqUxgu4_ynVA3bXw_nC13SdGIvWtakFYtGKlH8A/exec"; 
 
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [showMobilePreview, setShowMobilePreview] = useState(false);
   const [formData, setFormData] = useState({
     namaBisnis: '',
     domain: '',
-    domainCadangan: '', // Field baru ditambahkan
+    domainCadangan: '',
     judulUtama: '',
     deskripsi: '',
     layanan: '',
@@ -69,11 +154,6 @@ const App = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!GAS_URL) {
-      alert("Konfigurasi API belum lengkap.");
-      return;
-    }
-    
     setLoading(true);
     try {
       await fetch(GAS_URL, {
@@ -96,122 +176,51 @@ const App = () => {
       case 1:
         return (
           <div className="space-y-6 animate-fadeIn">
-            <div className="border-b border-slate-100 pb-4 mb-6">
-              <h2 className="text-xl font-bold text-slate-800">Identitas Brand</h2>
-              <p className="text-sm text-slate-500">Mari mulai dengan informasi dasar bisnis Anda.</p>
+            <div className="border-b border-slate-100 pb-4 mb-4">
+              <h2 className="text-lg sm:text-xl font-bold text-slate-800 tracking-tight">Identitas Brand</h2>
+              <p className="text-xs sm:text-sm text-slate-500">Informasi dasar untuk domain dan kontak.</p>
             </div>
             
-            <InputWrapper label="Nama Bisnis / Instansi" icon={Briefcase} hint="Nama yang akan ditampilkan di logo/header website.">
-              <input 
-                required
-                type="text" 
-                name="namaBisnis"
-                value={formData.namaBisnis}
-                onChange={handleChange}
-                placeholder="Misal: Artha Digital Studio"
-                className="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all placeholder:text-slate-400"
-              />
+            <InputWrapper label="Nama Bisnis" icon={Briefcase}>
+              <input required type="text" name="namaBisnis" value={formData.namaBisnis} onChange={handleChange} placeholder="Misal: Artha Digital Studio" className="w-full p-3.5 sm:p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all" />
             </InputWrapper>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <InputWrapper label="Pilihan Domain Utama" icon={Globe} hint="Contoh: bisnisanda.com (akhiran domain bisa: .id, .com, co.id, sch.id, dll">
-                <div className="relative">
-                  <input 
-                    required
-                    type="text" 
-                    name="domain"
-                    value={formData.domain}
-                    onChange={handleChange}
-                    placeholder="domainutama.com"
-                    className="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all"
-                  />
-                  <div className="absolute right-3 top-1/2 -translate-y-1/2 px-2 py-1 bg-indigo-100 rounded text-[9px] font-bold text-indigo-600 uppercase tracking-tighter">UTAMA</div>
-                </div>
+              <InputWrapper label="Domain Utama" icon={Globe}>
+                <input required type="text" name="domain" value={formData.domain} onChange={handleChange} placeholder="bisnisanda.com" className="w-full p-3.5 sm:p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all" />
               </InputWrapper>
-
-              <InputWrapper label="Domain Cadangan" icon={Globe} hint="Jika domain utama tidak tersedia.">
-                <div className="relative">
-                  <input 
-                    required
-                    type="text" 
-                    name="domainCadangan"
-                    value={formData.domainCadangan}
-                    onChange={handleChange}
-                    placeholder="domaincadangan.com"
-                    className="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all"
-                  />
-                  <div className="absolute right-3 top-1/2 -translate-y-1/2 px-2 py-1 bg-slate-100 rounded text-[9px] font-bold text-slate-400 uppercase tracking-tighter">OPSIONAL</div>
-                </div>
+              <InputWrapper label="Domain Cadangan" icon={Globe}>
+                <input type="text" name="domainCadangan" value={formData.domainCadangan} onChange={handleChange} placeholder="bisnisanda-official.com" className="w-full p-3.5 sm:p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all" />
               </InputWrapper>
             </div>
 
-            <InputWrapper label="WhatsApp Kontak" icon={MessageSquare} hint="Gunakan format internasional (Contoh: 62812...)">
-              <input 
-                required
-                type="text" 
-                name="kontakWA"
-                value={formData.kontakWA}
-                onChange={handleChange}
-                placeholder="62812xxx"
-                className="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all"
-              />
+            <InputWrapper label="WhatsApp Kontak" icon={MessageSquare}>
+              <input required type="text" name="kontakWA" value={formData.kontakWA} onChange={handleChange} placeholder="62812xxx" className="w-full p-3.5 sm:p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all" />
             </InputWrapper>
           </div>
         );
       case 2:
         return (
           <div className="space-y-6 animate-fadeIn">
-            <div className="border-b border-slate-100 pb-4 mb-6">
-              <h2 className="text-xl font-bold text-slate-800">Struktur Konten</h2>
-              <p className="text-sm text-slate-500">Isi pesan yang ingin Anda sampaikan ke pengunjung.</p>
+            <div className="border-b border-slate-100 pb-4 mb-4">
+              <h2 className="text-lg sm:text-xl font-bold text-slate-800 tracking-tight">Struktur Konten</h2>
+              <p className="text-xs sm:text-sm text-slate-500">Pesan utama yang ingin Anda sampaikan.</p>
             </div>
 
-            <InputWrapper label="Judul Utama (Headline)" icon={Layout} hint="Kalimat 'Menjual' yang pertama kali dilihat pengunjung.">
-              <input 
-                required
-                type="text" 
-                name="judulUtama"
-                value={formData.judulUtama}
-                onChange={handleChange}
-                placeholder="Solusi Terbaik untuk Kebutuhan Bisnis Anda"
-                className="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all"
-              />
+            <InputWrapper label="Judul Utama" icon={Layout}>
+              <input required type="text" name="judulUtama" value={formData.judulUtama} onChange={handleChange} placeholder="Solusi Terbaik Bisnis" className="w-full p-3.5 sm:p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all" />
             </InputWrapper>
 
-            <InputWrapper label="Tentang Kami" icon={Info}>
-              <textarea 
-                required
-                name="deskripsi"
-                value={formData.deskripsi}
-                onChange={handleChange}
-                rows="4"
-                placeholder="Jelaskan sejarah singkat atau visi misi perusahaan Anda..."
-                className="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all resize-none"
-              ></textarea>
+            <InputWrapper label="Deskripsi" icon={Info}>
+              <textarea required name="deskripsi" value={formData.deskripsi} onChange={handleChange} rows="4" placeholder="Ceritakan sejarah singkat bisnis Anda..." className="w-full p-3.5 sm:p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all resize-none" />
             </InputWrapper>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <InputWrapper label="Layanan Utama" icon={Zap}>
-                <input 
-                  required
-                  type="text" 
-                  name="layanan"
-                  value={formData.layanan}
-                  onChange={handleChange}
-                  placeholder="Misal: Jasa Desain, Konsultasi..."
-                  className="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all"
-                />
+              <InputWrapper label="Layanan (Pisah Koma)" icon={Zap}>
+                <input required type="text" name="layanan" value={formData.layanan} onChange={handleChange} placeholder="Desain, Cetak, Kirim" className="w-full p-3.5 sm:p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all" />
               </InputWrapper>
-              <InputWrapper label="Keunggulan" icon={ShieldCheck}>
-                <input 
-                  required
-                  type="text" 
-                  name="keunggulan"
-                  value={formData.keunggulan}
-                  onChange={handleChange}
-                  placeholder="Misal: 24/7 Support, Garansi..."
-                  className="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all"
-                />
+              <InputWrapper label="Keunggulan (Pisah Koma)" icon={ShieldCheck}>
+                <input required type="text" name="keunggulan" value={formData.keunggulan} onChange={handleChange} placeholder="Murah, Cepat, Garansi" className="w-full p-3.5 sm:p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all" />
               </InputWrapper>
             </div>
           </div>
@@ -219,64 +228,37 @@ const App = () => {
       case 3:
         return (
           <div className="space-y-6 animate-fadeIn">
-            <div className="border-b border-slate-100 pb-4 mb-6">
-              <h2 className="text-xl font-bold text-slate-800">Visual & Aset</h2>
-              <p className="text-sm text-slate-500">Sentuhan akhir untuk identitas visual website.</p>
+            <div className="border-b border-slate-100 pb-4 mb-4">
+              <h2 className="text-lg sm:text-xl font-bold text-slate-800 tracking-tight">Visual & Aset</h2>
+              <p className="text-xs sm:text-sm text-slate-500">Warna tema dan link Google Drive.</p>
             </div>
 
-            <InputWrapper label="Warna Identitas" icon={Palette} hint="Pilih warna dominan untuk tombol dan aksen.">
-              <div className="flex items-center gap-6 p-4 bg-slate-50 rounded-2xl border border-slate-200">
-                <input 
-                  type="color" 
-                  name="warna"
-                  value={formData.warna}
-                  onChange={handleChange}
-                  className="w-16 h-16 border-4 border-white shadow-sm rounded-full cursor-pointer overflow-hidden"
-                />
+            <InputWrapper label="Warna Dominan" icon={Palette}>
+              <div className="flex items-center gap-6 p-4 sm:p-5 bg-slate-50 rounded-2xl border border-slate-200">
+                <input type="color" name="warna" value={formData.warna} onChange={handleChange} className="w-14 h-14 sm:w-16 sm:h-16 border-4 border-white shadow-sm rounded-2xl cursor-pointer" />
                 <div>
-                  <p className="font-mono text-sm font-bold text-slate-700 uppercase tracking-widest">{formData.warna}</p>
-                  <p className="text-[10px] text-slate-400">Warna Terpilih</p>
+                  <p className="font-mono text-sm font-bold text-slate-700 uppercase">{formData.warna}</p>
+                  <p className="text-[10px] text-slate-400">Pilihan Warna Tema</p>
                 </div>
               </div>
             </InputWrapper>
 
-            <InputWrapper label="Folder Aset (Google Drive)" icon={ImageIcon} hint="Masukkan link folder berisi Logo & Foto pendukung.">
+            <InputWrapper label="Link Aset Google Drive" icon={ImageIcon}>
               <div className="relative group">
-                <input 
-                  required
-                  type="url" 
-                  name="linkAset"
-                  value={formData.linkAset}
-                  onChange={handleChange}
-                  placeholder="https://drive.google.com/..."
-                  className="w-full p-3.5 pr-12 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all"
-                />
-                <ExternalLink className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-indigo-500 transition-colors" size={18} />
+                <input required type="url" name="linkAset" value={formData.linkAset} onChange={handleChange} placeholder="https://drive.google.com/..." className="w-full p-3.5 sm:p-4 pr-12 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all" />
+                <ExternalLink className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
               </div>
             </InputWrapper>
-
-            <div className="p-6 bg-gradient-to-br from-indigo-600 to-violet-700 rounded-2xl text-white shadow-xl shadow-indigo-200 mt-8 relative overflow-hidden group">
-               <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
-                  <ShieldCheck size={120} />
-               </div>
-               <h3 className="font-bold mb-2 flex items-center gap-2">
-                 <CheckCircle size={18} /> Ringkasan Order
-               </h3>
-               <div className="space-y-2 text-sm text-indigo-100">
-                  <div className="flex justify-between border-b border-white/10 pb-1">
-                    <span>Paket</span>
-                    <span className="font-bold">Basic (Single Page)</span>
-                  </div>
-                  <div className="flex justify-between border-b border-white/10 pb-1">
-                    <span>Target Selesai</span>
-                    <span className="font-bold">3 - 4 Hari Kerja</span>
-                  </div>
-                  <div className="flex justify-between pt-1">
-                    <span>Total Biaya</span>
-                    <span className="font-bold text-white text-lg">Rp 750.000</span>
-                  </div>
-               </div>
+          </div>
+        );
+      case 4:
+        return (
+          <div className="space-y-6 animate-fadeIn lg:hidden">
+            <div className="border-b border-slate-100 pb-4 mb-4">
+              <h2 className="text-xl font-bold text-slate-800">Final Review</h2>
+              <p className="text-sm text-slate-500 italic">Cek desain Anda sekali lagi sebelum kirim.</p>
             </div>
+            <LandingPagePreview data={formData} />
           </div>
         );
       default:
@@ -287,20 +269,16 @@ const App = () => {
   if (submitted) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-white rounded-[2.5rem] shadow-2xl shadow-slate-200 p-10 text-center relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-green-400 to-emerald-500"></div>
-          <div className="w-24 h-24 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-8 border-4 border-green-100">
-            <CheckCircle className="text-green-500 w-12 h-12" />
+        <div className="max-w-md w-full bg-white rounded-[2.5rem] sm:rounded-[3rem] shadow-2xl shadow-indigo-100 p-8 sm:p-12 text-center border border-white">
+          <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6 border-4 border-green-100">
+            <CheckCircle className="text-green-500 w-10 h-10" />
           </div>
-          <h1 className="text-3xl font-black text-slate-900 mb-4">Brief Diterima!</h1>
-          <p className="text-slate-500 leading-relaxed mb-10">
-            Terima kasih telah mempercayakan project Anda. Kami akan segera memproses data <strong>{formData.namaBisnis}</strong> dan mengonfirmasi via WhatsApp.
+          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 mb-4 tracking-tighter leading-none">Berhasil Terkirim!</h1>
+          <p className="text-slate-500 leading-relaxed mb-8 text-xs sm:text-sm">
+            Brief project <strong>{formData.namaBisnis}</strong> telah aman. Kami akan segera menghubungi Anda via WhatsApp.
           </p>
-          <button 
-            onClick={() => window.location.reload()}
-            className="w-full py-4 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-2xl transition-all shadow-xl active:scale-95"
-          >
-            Selesai
+          <button onClick={() => window.location.reload()} className="w-full py-4 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-2xl transition-all shadow-xl active:scale-95">
+            Tutup
           </button>
         </div>
       </div>
@@ -308,125 +286,103 @@ const App = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] flex flex-col items-center justify-center py-16 px-4 font-sans text-slate-900">
+    <div className="min-h-screen bg-[#f8fafc] py-8 sm:py-12 px-4 lg:px-8">
       <style>{`
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fadeIn { animation: fadeIn 0.5s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fadeIn { animation: fadeIn 0.4s ease-out forwards; }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
       `}</style>
 
-      <div className="max-w-2xl w-full">
-        {/* Top Header Badge */}
-        <div className="flex justify-center mb-6">
-          <div className="px-4 py-1.5 bg-white border border-slate-200 rounded-full shadow-sm flex items-center gap-2">
-            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Order System v2.0</span>
+      {/* Floating Preview Button for Mobile */}
+      {step < 4 && (
+        <button 
+          onClick={() => setShowMobilePreview(true)}
+          className="lg:hidden fixed bottom-6 right-6 z-40 bg-indigo-600 text-white p-4 rounded-full shadow-2xl active:scale-90 transition-transform flex items-center gap-2 border-2 border-white/20"
+        >
+          <Eye size={20} />
+          <span className="text-xs font-bold">Intip Preview</span>
+        </button>
+      )}
+
+      {/* Mobile Preview Overlay */}
+      {showMobilePreview && (
+        <div className="lg:hidden fixed inset-0 z-50 flex flex-col justify-end bg-slate-900/60 backdrop-blur-sm animate-fadeIn">
+          <div className="flex justify-between items-center px-6 py-4 text-white">
+            <span className="text-xs font-black uppercase tracking-widest">Live Preview</span>
+            <button onClick={() => setShowMobilePreview(false)} className="p-2 bg-white/10 rounded-full"><X size={20} /></button>
           </div>
+          <LandingPagePreview data={formData} isModal={true} />
         </div>
+      )}
 
-        {/* Brand Logo & Title */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-black text-slate-900 tracking-tighter sm:text-5xl">
-            Lengkapi <span className="text-indigo-600">Brief</span> Anda
-          </h1>
-          <p className="mt-4 text-slate-500 text-lg max-w-sm mx-auto">
-            Berikan detail terbaik agar website impian Anda segera terwujud.
-          </p>
-        </div>
-
-        {/* Progress Timeline */}
-        <div className="relative mb-12 px-6">
-          <div className="absolute top-1/2 left-0 w-full h-1 bg-slate-200 -translate-y-1/2 rounded-full"></div>
-          <div 
-            className="absolute top-1/2 left-0 h-1 bg-indigo-600 -translate-y-1/2 rounded-full transition-all duration-500 ease-in-out shadow-[0_0_10px_rgba(79,70,229,0.5)]"
-            style={{ width: `${(step - 1) * 50}%` }}
-          ></div>
+      <div className="max-w-7xl mx-auto h-full">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-start">
           
-          <div className="relative flex justify-between">
-            {[1, 2, 3].map((s) => (
-              <div key={s} className="flex flex-col items-center">
-                <div className={`w-10 h-10 rounded-2xl flex items-center justify-center font-bold text-sm transition-all duration-500 z-10 ${
-                  step >= s 
-                    ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-100 rotate-0' 
-                    : 'bg-white text-slate-300 border-2 border-slate-200 rotate-12'
-                }`}>
-                  {step > s ? <CheckCircle size={20} /> : s}
-                </div>
-                <span className={`absolute -bottom-7 text-[10px] font-bold uppercase tracking-tighter transition-colors duration-300 ${step >= s ? 'text-indigo-600' : 'text-slate-300'}`}>
-                  {s === 1 ? 'Data' : s === 2 ? 'Konten' : 'Visual'}
-                </span>
+          <div className="lg:col-span-5 space-y-6 sm:space-y-8">
+            <div className="text-left">
+              <div className="px-3 py-1 bg-white border border-slate-200 rounded-full inline-flex items-center gap-2 mb-3 shadow-sm">
+                <div className="w-2 h-2 bg-indigo-500 rounded-full animate-pulse" />
+                <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 tracking-tighter">Order System v2.1</span>
               </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Main Form Card */}
-        <div className="bg-white/70 backdrop-blur-xl rounded-[2.5rem] shadow-2xl shadow-indigo-100/50 border border-white overflow-hidden animate-fadeIn">
-          <form onSubmit={handleSubmit} className="p-8 sm:p-12">
-            {renderStep()}
-
-            {/* Navigation Buttons */}
-            <div className="flex items-center justify-between mt-12 pt-8 border-t border-slate-50">
-              {step > 1 ? (
-                <button 
-                  type="button" 
-                  onClick={prevStep}
-                  className="group flex items-center gap-2 px-6 py-3 text-slate-500 font-bold hover:text-indigo-600 transition-all active:scale-95"
-                >
-                  <ChevronLeft size={20} className="group-hover:-translate-x-1 transition-transform" /> 
-                  Sebelumnya
-                </button>
-              ) : <div />}
-
-              {step < 3 ? (
-                <button 
-                  type="button" 
-                  onClick={nextStep}
-                  disabled={
-                    (step === 1 && (!formData.namaBisnis || !formData.domain || !formData.kontakWA)) ||
-                    (step === 2 && (!formData.judulUtama || !formData.deskripsi))
-                  }
-                  className="flex items-center gap-3 px-10 py-4 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold rounded-2xl transition-all shadow-xl shadow-indigo-200 active:scale-95 active:shadow-none"
-                >
-                  Lanjut <ChevronRight size={20} />
-                </button>
-              ) : (
-                <button 
-                  type="submit"
-                  disabled={loading || !formData.linkAset}
-                  className="flex items-center gap-3 px-12 py-4 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-40 text-white font-black rounded-2xl transition-all shadow-xl shadow-indigo-200 active:scale-95"
-                >
-                  {loading ? (
-                    <div className="flex items-center gap-2 italic">
-                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                      Mengirim...
-                    </div>
-                  ) : (
-                    <>Kirim Project Brief <Send size={18} /></>
-                  )}
-                </button>
-              )}
+              <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tighter leading-tight">
+                Project <span className="text-indigo-600">Brief</span>
+              </h1>
             </div>
-          </form>
-        </div>
 
-        {/* Security Footer */}
-        <div className="mt-12 flex flex-col items-center gap-4 text-slate-400">
-          <div className="flex items-center gap-6 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
-             <div className="flex items-center gap-1.5 border-r border-slate-200 pr-6">
-                <ShieldCheck size={16} />
-                <span className="text-[10px] font-bold uppercase tracking-widest">SSL Secure</span>
-             </div>
-             <div className="flex items-center gap-1.5">
-                <CheckCircle size={16} />
-                <span className="text-[10px] font-bold uppercase tracking-widest">Verified Dev</span>
-             </div>
+            <div className="flex gap-1.5 sm:gap-2">
+              {[1, 2, 3, 4].map((s) => (
+                <div key={s} className={`h-1.5 flex-1 rounded-full transition-all duration-500 ${step >= s ? 'bg-indigo-600 shadow-[0_0_10px_rgba(79,70,229,0.3)]' : 'bg-slate-200'}`} />
+              ))}
+            </div>
+
+            <div className="bg-white rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl shadow-slate-200/50 border border-white overflow-hidden text-left p-6 sm:p-10">
+              <form onSubmit={handleSubmit}>
+                {renderStep()}
+
+                <div className="flex items-center justify-between mt-8 pt-6 sm:pt-8 border-t border-slate-50">
+                  {step > 1 ? (
+                    <button type="button" onClick={prevStep} className="flex items-center gap-1.5 text-slate-400 font-bold hover:text-indigo-600 text-xs sm:text-sm px-2">
+                      <ChevronLeft size={18} /> Kembali
+                    </button>
+                  ) : <div />}
+
+                  {step < 4 ? (
+                    <button type="button" onClick={nextStep}
+                      disabled={(step === 1 && (!formData.namaBisnis || !formData.domain || !formData.kontakWA)) || (step === 2 && (!formData.judulUtama || !formData.deskripsi)) || (step === 3 && !formData.linkAset)}
+                      className="flex items-center gap-2 px-8 sm:px-10 py-3.5 sm:py-4 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-30 text-white font-bold rounded-2xl transition-all shadow-xl text-xs sm:text-sm"
+                    >
+                      {step === 3 ? 'Lihat Final' : 'Lanjut'} <ChevronRight size={18} />
+                    </button>
+                  ) : (
+                    <button type="submit" disabled={loading} className="flex items-center gap-2 px-10 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-2xl transition-all shadow-xl text-sm sm:text-base">
+                      {loading ? 'Mengirim...' : <><Send size={18} /> Kirim Sekarang</>}
+                    </button>
+                  )}
+                </div>
+              </form>
+            </div>
           </div>
-          <p className="text-[11px] font-medium tracking-tight">
-            © {new Date().getFullYear()} • Dirancang untuk Keunggulan Digital Anda.
-          </p>
+
+          <div className={`lg:col-span-7 sticky top-12 ${step === 4 ? 'block' : 'hidden lg:block'}`}>
+            <div className="relative group">
+              <div className="absolute -top-6 left-6 px-4 py-2 bg-slate-900 text-white text-[9px] font-black uppercase tracking-[0.2em] rounded-t-xl shadow-lg hidden sm:block">
+                Desktop Live Preview
+              </div>
+              <LandingPagePreview data={formData} />
+            </div>
+
+            <div className="mt-6 sm:mt-8 bg-white/50 backdrop-blur rounded-3xl p-5 sm:p-6 border border-white flex flex-col sm:flex-row justify-between items-center px-6 sm:px-10 gap-3">
+               <div className="text-center sm:text-left">
+                  <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Total Investasi</p>
+                  <p className="text-lg sm:text-xl font-black text-slate-900">Rp 750.000</p>
+               </div>
+               <div className="flex items-center gap-2 py-1.5 px-3 bg-emerald-50 rounded-full border border-emerald-100">
+                  <ShieldCheck className="text-emerald-500" size={14} />
+                  <span className="text-[10px] font-bold text-emerald-600 uppercase">Aman & Terverifikasi</span>
+               </div>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
