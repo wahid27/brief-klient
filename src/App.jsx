@@ -35,7 +35,7 @@ const InputWrapper = ({ label, children, hint, icon: Icon }) => (
 
 const App = () => {
   // URL Web App dari Google Apps Script Anda
-  const GAS_URL = "https://script.google.com/macros/s/AKfycby_HQrDaZU1vmS9rdu1kqNNTno5ndqUxgu4_ynVA3bXw_nC13SdGIvWtakFYtGKlH8A/exec"; 
+  const GAS_URL = "https://script.google.com/macros/s/AKfycbwFII-6aSUGLUUXSyGEFUfdJn1id-RJyfMbV6iyhgMVtbviML0o-nHFxuGEaY6nxkoV/exec"; 
 
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
