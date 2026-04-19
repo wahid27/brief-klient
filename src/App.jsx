@@ -119,7 +119,7 @@ const LandingPagePreview = ({ data, isModal = false }) => {
 };
 
 const App = () => {
-  const GAS_URL = "https://script.google.com/macros/s/AKfycby_HQrDaZU1vmS9rdu1kqNNTno5ndqUxgu4_ynVA3bXw_nC13SdGIvWtakFYtGKlH8A/exec"; 
+  const GAS_URL = "https://script.google.com/macros/s/AKfycbyiP-oSRweJ2XbSzTYk3MsNTMTnunDQnCipxi_b_EHFEx6wb5WM0IWtSdiOTchBpTQr/exec"; 
 
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
