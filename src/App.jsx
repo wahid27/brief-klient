@@ -16,6 +16,23 @@ import {
   ExternalLink
 } from 'lucide-react';
 
+/**
+ * PERBAIKAN UTAMA: 
+ * Komponen InputWrapper dipindahkan ke LUAR komponen App.
+ * Jika ditaruh di dalam App, React akan membuat ulang komponen ini 
+ * setiap kali state berubah (ketik huruf), yang menyebabkan input kehilangan fokus.
+ */
+const InputWrapper = ({ label, children, hint, icon: Icon }) => (
+  <div className="group space-y-2">
+    <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 transition-colors group-focus-within:text-indigo-600">
+      {Icon && <Icon size={16} />}
+      {label}
+    </label>
+    {children}
+    {hint && <p className="text-[11px] text-slate-400 italic">{hint}</p>}
+  </div>
+);
+
 const App = () => {
   // URL Web App dari Google Apps Script Anda
   const GAS_URL = "https://script.google.com/macros/s/AKfycby_HQrDaZU1vmS9rdu1kqNNTno5ndqUxgu4_ynVA3bXw_nC13SdGIvWtakFYtGKlH8A/exec"; 
@@ -72,17 +89,6 @@ const App = () => {
       setLoading(false);
     }
   };
-
-  const InputWrapper = ({ label, children, hint, icon: Icon }) => (
-    <div className="group space-y-2">
-      <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 transition-colors group-focus-within:text-indigo-600">
-        {Icon && <Icon size={16} />}
-        {label}
-      </label>
-      {children}
-      {hint && <p className="text-[11px] text-slate-400 italic">{hint}</p>}
-    </div>
-  );
 
   const renderStep = () => {
     switch (step) {
