@@ -43,6 +43,7 @@ const App = () => {
   const [formData, setFormData] = useState({
     namaBisnis: '',
     domain: '',
+    domainCadangan: '', // Field baru ditambahkan
     judulUtama: '',
     deskripsi: '',
     layanan: '',
@@ -112,20 +113,37 @@ const App = () => {
               />
             </InputWrapper>
 
-            <InputWrapper label="Pilihan Domain" icon={Globe} hint="Cek ketersediaan di .com (Misal: arthadigital.com)">
-              <div className="relative">
-                <input 
-                  required
-                  type="text" 
-                  name="domain"
-                  value={formData.domain}
-                  onChange={handleChange}
-                  placeholder="domainanda.com"
-                  className="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all"
-                />
-                <div className="absolute right-3 top-1/2 -translate-y-1/2 px-2 py-1 bg-slate-200 rounded text-[10px] font-bold text-slate-600 uppercase">BASIC PAKET</div>
-              </div>
-            </InputWrapper>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <InputWrapper label="Pilihan Domain Utama" icon={Globe} hint="Contoh: bisnisanda.com (akhiran domain bisa: .id, .com, co.id, sch.id, dll">
+                <div className="relative">
+                  <input 
+                    required
+                    type="text" 
+                    name="domain"
+                    value={formData.domain}
+                    onChange={handleChange}
+                    placeholder="domainutama.com"
+                    className="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all"
+                  />
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2 px-2 py-1 bg-indigo-100 rounded text-[9px] font-bold text-indigo-600 uppercase tracking-tighter">UTAMA</div>
+                </div>
+              </InputWrapper>
+
+              <InputWrapper label="Domain Cadangan" icon={Globe} hint="Jika domain utama tidak tersedia.">
+                <div className="relative">
+                  <input 
+                    required
+                    type="text" 
+                    name="domainCadangan"
+                    value={formData.domainCadangan}
+                    onChange={handleChange}
+                    placeholder="domaincadangan.com"
+                    className="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all"
+                  />
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2 px-2 py-1 bg-slate-100 rounded text-[9px] font-bold text-slate-400 uppercase tracking-tighter">OPSIONAL</div>
+                </div>
+              </InputWrapper>
+            </div>
 
             <InputWrapper label="WhatsApp Kontak" icon={MessageSquare} hint="Gunakan format internasional (Contoh: 62812...)">
               <input 
